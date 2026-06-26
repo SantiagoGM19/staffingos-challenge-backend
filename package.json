@@ -64,7 +64,9 @@
     "@adonisjs/shield": "^9.0.0",
     "@japa/api-client": "^3.2.1",
     "@tuyau/core": "^1.2.2",
+    "@types/jsonwebtoken": "^9.0.10",
     "@vinejs/vine": "^4.4.0",
+    "jsonwebtoken": "^9.0.3",
     "luxon": "^3.7.2",
     "mysql2": "^3.22.5",
     "reflect-metadata": "^0.2.2"
