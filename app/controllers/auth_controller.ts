@@ -1,5 +1,6 @@
 import { AuthService } from '#services/auth_service'
 import { loginValidator } from '#validators/auth'
+import { HttpUtils } from '#utils/http_utils'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
@@ -11,5 +12,12 @@ export default class AuthController {
     async login({ request }: HttpContext){
         const {email, password} = await request.validateUsing(loginValidator)
         return await this.authService.login(email, password)
+    }
+
+    async logout({ request, response }: HttpContext) {
+        const authHeader = request.header('Authorization')
+        const token = HttpUtils.extractBearerToken(authHeader)
+        await this.authService.logout(token)
+        return response.noContent()
     }
 }

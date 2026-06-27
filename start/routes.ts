@@ -14,4 +14,7 @@ router.get('/', () => {
   return { hello: 'world' }
 })
 
-router.post('/login', [AuthController, 'login']).as('auth.login')
+router.group(() => {
+  router.post('/login', [AuthController, 'login']).as('auth.login')
+  router.post('/logout', [AuthController, 'logout']).as('auth.logout')
+}).prefix('/auth')

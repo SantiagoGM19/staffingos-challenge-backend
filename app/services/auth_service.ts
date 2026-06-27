@@ -1,4 +1,5 @@
 import InvalidCredentialsException from '#exceptions/invalid_credentials_exception'
+import InvalidTokenException from '#exceptions/invalid_token_exception'
 import UserSession from '#models/user_session'
 import env from '#start/env'
 import { DateTime } from 'luxon'
@@ -19,6 +20,20 @@ export class AuthService {
     await this.persistSession(user.id, token)
 
     return { token }
+  }
+
+  async logout(token: string): Promise<void> {
+    try {
+      jwt.verify(token, this.JWT_SECRET)
+    } catch {
+      throw new InvalidTokenException()
+    }
+
+    const session = await UserSession.findBy({ token, isActive: true })
+    if (session) {
+      session.isActive = false
+      await session.save()
+    }
   }
 
   private async fetchUserByEmail(email: string) {
