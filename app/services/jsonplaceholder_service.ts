@@ -13,7 +13,7 @@ export class JsonplaceholderService {
 
     async getPostsByUser(userId: number): Promise<Post[]> {
         const data = await this.httpClient.makeRequest<Post[]>(`${this.BASE_URL}/posts?userId=${userId}`, undefined, 'fetching posts')
-        return data.map((post) => new Post(post.userId, post.id, post.title, post.body)) 
+        return data.map((post) => new Post(post.title, post.body, post.userId, post.id)) 
     }
 
     async getUserByEmail(email: string): Promise<User[]> {
@@ -22,21 +22,21 @@ export class JsonplaceholderService {
     }
 
     async createPost(post: Post): Promise<Post> {
-        const data = await this.httpClient.makeRequest<any>(`${this.BASE_URL}/posts`, {
+        const data = await this.httpClient.makeRequest<Post>(`${this.BASE_URL}/posts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: post.userId, title: post.title, body: post.body }),
         }, 'creating post')
-        return new Post(data.userId, data.id, data.title, data.body) 
+        return new Post(data.title, data.body, data.userId, data.id) 
     }
 
     async updatePost(postId: number, post: Post): Promise<Post> {
-        const data = await this.httpClient.makeRequest<any>(`${this.BASE_URL}/posts/${postId}`, {
+        const data = await this.httpClient.makeRequest<Post>(`${this.BASE_URL}/posts/${postId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: post.userId, title: post.title, body: post.body }),
         }, 'updating post')
-        return new Post(data.userId, data.id, data.title, data.body) 
+        return new Post(data.title, data.body, data.userId, data.id) 
     }
 
     async deletePost(postId: number): Promise<void> {
