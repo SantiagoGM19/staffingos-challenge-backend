@@ -1,5 +1,6 @@
 import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
+import { ApiResponse } from '#utils/api_response'
 
 export default class ExternalServiceNetworkException extends Exception {
 
@@ -12,7 +13,7 @@ export default class ExternalServiceNetworkException extends Exception {
   async handle(error: this, ctx: HttpContext) {
     return ctx.response
       .status(error.status)
-      .json({ message: error.message })
+      .json(ApiResponse.error(error.message))
   }
 
   async report(error: this, ctx: HttpContext) {

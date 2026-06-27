@@ -6,6 +6,7 @@ import { DateTime } from 'luxon'
 import jwt from 'jsonwebtoken'
 import { inject } from '@adonisjs/core'
 import { JsonplaceholderService } from '#services/jsonplaceholder_service'
+import User from '#models/user'
 
 @inject()
 export class AuthService {
@@ -15,16 +16,16 @@ export class AuthService {
 
   constructor(protected jsonplaceholderService: JsonplaceholderService) {}
 
-  async login(email: string, password: string): Promise<{ token: string }> {
+  async login(email: string, password: string): Promise<{ user: User; token: string }> {
     const data = await this.jsonplaceholderService.getUserByEmail(email)
     const user = data.length === 1 ? data[0] : null
 
     if (!user || password !== this.PASSWORD) throw new InvalidCredentialsException()
 
-    const token = this.generateToken(user.id, email)
+    const token = this.generateToken(user.id, user.email)
     await this.persistSession(user.id, token)
 
-    return { token }
+    return { user, token }
   }
 
   async logout(token: string): Promise<void> {
