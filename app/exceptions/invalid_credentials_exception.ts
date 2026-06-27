@@ -5,13 +5,17 @@ export default class InvalidCredentialsException extends Exception {
   
   static status = 401
 
+  constructor(message: string = 'Invalid email or password provided') {
+    super(message, { status: 401 })
+  }
+
   async handle(error: this, ctx: HttpContext) {
     return ctx.response
       .status(error.status)
-      .json({ message: 'Invalid email or password provided' })
+      .json({ message: error.message })
   }
 
   async report(error: this, ctx: HttpContext) {
-    ctx.logger.error({err: error}, 'InvalidCredentialsException: Invalid email or password provided')
+    ctx.logger.error({ err: error }, 'InvalidCredentialsException: ' + error.message)
   }
 }   

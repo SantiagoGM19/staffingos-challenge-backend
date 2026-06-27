@@ -5,9 +5,17 @@ export default class ApplicationException extends Exception {
     
     static status = 500
     
-    handle(error: this, {response}: HttpContext){
-        return response
+    constructor(message: string = 'An unexpected error occurred. Please try again later.') {
+        super(message, { status: 500 })
+    }
+
+    async handle(error: this, ctx: HttpContext) {
+        return ctx.response
             .status(error.status)
-            .send('An unexpected error occurred. Please try again later.')
+            .json({ message: error.message })
+    }
+
+    async report(error: this, ctx: HttpContext) {
+        ctx.logger.error({ err: error }, 'ApplicationException: ' + error.message)
     }
 }

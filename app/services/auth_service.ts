@@ -4,15 +4,20 @@ import UserSession from '#models/user_session'
 import env from '#start/env'
 import { DateTime } from 'luxon'
 import jwt from 'jsonwebtoken'
+import { inject } from '@adonisjs/core'
+import { JsonplaceholderService } from '#services/jsonplaceholder_service'
 
+@inject()
 export class AuthService {
   private readonly PASSWORD = env.get('PASSWORD')
-  private readonly BASE_URL = env.get('BASE_URL')
   private readonly JWT_SECRET = env.get('JWT_SECRET')
   private readonly TOKEN_TTL_HOURS = 1
 
+  constructor(protected jsonplaceholderService: JsonplaceholderService) {}
+
   async login(email: string, password: string): Promise<{ token: string }> {
-    const user = await this.fetchUserByEmail(email)
+    const data = await this.jsonplaceholderService.getUserByEmail(email)
+    const user = data.length === 1 ? data[0] : null
 
     if (!user || password !== this.PASSWORD) throw new InvalidCredentialsException()
 
@@ -34,12 +39,6 @@ export class AuthService {
       session.isActive = false
       await session.save()
     }
-  }
-
-  private async fetchUserByEmail(email: string) {
-    const response = await fetch(`${this.BASE_URL}/users?email=${email}`)
-    const data = (await response.json()) as any[]
-    return data.length === 1 ? data[0] : null
   }
 
   private generateToken(userId: number, email: string): string {

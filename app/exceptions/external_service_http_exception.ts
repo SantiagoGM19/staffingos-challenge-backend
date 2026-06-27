@@ -1,12 +1,12 @@
 import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
 
-export default class InvalidTokenException extends Exception {
+export default class ExternalServiceHttpException extends Exception {
 
-  static status = 401
+  static status = 502
 
-  constructor(message: string = 'The provided token is invalid or has expired') {
-    super(message, { status: 401 })
+  constructor(message: string = 'External service returned an HTTP error') {
+    super(message, { status: 502 })
   }
 
   async handle(error: this, ctx: HttpContext) {
@@ -16,6 +16,6 @@ export default class InvalidTokenException extends Exception {
   }
 
   async report(error: this, ctx: HttpContext) {
-    ctx.logger.error({ err: error }, 'InvalidTokenException: ' + error.message)
+    ctx.logger.error({ err: error }, 'ExternalServiceHttpException: ' + error.message)
   }
 }
