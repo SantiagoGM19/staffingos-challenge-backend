@@ -17,6 +17,9 @@ export default class AuthController {
     async logout({ request, response }: HttpContext) {
         const authHeader = request.header('Authorization')
         const token = HttpUtils.extractBearerToken(authHeader)
+        if (!token) {
+            return response.unauthorized('Authorization token is missing')
+        }
         await this.authService.logout(token)
         return response.noContent()
     }
