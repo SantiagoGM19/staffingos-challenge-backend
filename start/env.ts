@@ -34,6 +34,8 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Auth
   PASSWORD: Env.schema.string(),
-  BASE_URL: Env.schema.string({ format: 'url', tld: false }),
   JWT_SECRET: Env.schema.string(),
+
+  // Jsonplaceholder
+  JSONPLACEHOLDER_URL: Env.schema.string({ format: 'url', tld: false }),
 })

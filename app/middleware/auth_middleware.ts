@@ -1,20 +1,49 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
-import type { Authenticators } from '@adonisjs/auth/types'
+import { HttpUtils } from '#utils/http_utils'
+import { ApiResponse } from '#utils/api_response'
+import UserSession from '#models/user_session'
+import env from '#start/env'
+import jwt from 'jsonwebtoken'
 
-/**
- * Auth middleware is used authenticate HTTP requests and deny
- * access to unauthenticated users.
- */
 export default class AuthMiddleware {
-  async handle(
-    ctx: HttpContext,
-    next: NextFn,
-    options: {
-      guards?: (keyof Authenticators)[]
-    } = {}
-  ) {
-    await ctx.auth.authenticateUsing(options.guards)
+  private readonly jwtSecret = env.get('JWT_SECRET')
+
+  async handle({ request, response }: HttpContext, next: NextFn) {
+    const token = this.extractToken(request.header('Authorization'))
+
+    if (!token) {
+      return response.unauthorized(ApiResponse.error('Unauthorized: missing or malformed Authorization header'))
+    }
+
+    if (!this.verifyToken(token)) {
+      return response.unauthorized(ApiResponse.error('Unauthorized: invalid or expired token'))
+    }
+
+    if (!await this.hasActiveSession(token)) {
+      return response.unauthorized(ApiResponse.error('Unauthorized: session not found or has been revoked'))
+    }
+
     return next()
+  }
+
+  private extractToken(authHeader: string | undefined): string | null {
+    if (!authHeader?.toLowerCase().startsWith('bearer ')) return null
+    const token = HttpUtils.extractBearerToken(authHeader)
+    return token || null
+  }
+
+  private verifyToken(token: string): boolean {
+    try {
+      jwt.verify(token, this.jwtSecret)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  private async hasActiveSession(token: string): Promise<boolean> {
+    const session = await UserSession.findBy({ token, isActive: true })
+    return session !== null
   }
 }

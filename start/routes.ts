@@ -1,17 +1,9 @@
-/*
-|--------------------------------------------------------------------------
-| Routes file
-|--------------------------------------------------------------------------
-|
-| The routes file is used for defining the HTTP routes.
-|
-*/
-
 import AuthController from '#controllers/auth_controller'
 import router from '@adonisjs/core/services/router'
 
 import { ApiResponse } from '#utils/api_response'
 import PostController from '#controllers/post_controller'
+import { middleware } from '#start/kernel'
 
 router.get('/', () => {
   return ApiResponse.success({ hello: 'world' })
@@ -27,4 +19,4 @@ router.group(() => {
   router.post('/', [PostController, 'createPost']).as('posts.create')
   router.put('/:id', [PostController, 'updatePost']).as('posts.update')
   router.delete('/:id', [PostController, 'deletePost']).as('posts.delete')
-}).prefix('/posts')
+}).prefix('/posts').use(middleware.auth())
