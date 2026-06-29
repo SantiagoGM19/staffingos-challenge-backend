@@ -40,7 +40,7 @@ export class JsonplaceholderService {
     }
 
     async deletePost(postId: number): Promise<void> {
-        await this.httpClient.makeRequest<void>(`${this.JSONPLACEHOLDER_URL}/posts/${postId}`, {
+        return await this.httpClient.makeRequest<void>(`${this.JSONPLACEHOLDER_URL}/posts/${postId}`, {
             method: 'DELETE',
         }, 'deleting post')
     }

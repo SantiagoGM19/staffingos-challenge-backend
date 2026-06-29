@@ -29,7 +29,7 @@ export default class PostController {
   }
 
   async deletePost({ params, response }: HttpContext) {
-    const post = await this.jsonplaceholderService.deletePost(params.id)
-    return response.ok(ApiResponse.success(post, 'Post deleted successfully'))
+    await this.jsonplaceholderService.deletePost(params.id)
+    return response.ok(ApiResponse.success(null, 'Post deleted successfully'))
   }
 }
