@@ -1,7 +1,7 @@
 import env from '#start/env'
 
 export default {
-  connection: 'mysql',
+  connection: env.get('DB_CONNECTION', 'mysql'),
   connections: {
     mysql: {
       client: 'mysql2',
@@ -12,6 +12,17 @@ export default {
         password: env.get('DB_PASSWORD'),
         database: env.get('DB_DATABASE'),
       },
+      migrations: {
+        naturalSort: true,
+        paths: ['database/migrations'],
+      },
+    },
+    sqlite: {
+      client: 'sqlite3',
+      connection: {
+        filename: env.get('DB_DATABASE', ':memory:'),
+      },
+      useNullAsDefault: true,
       migrations: {
         naturalSort: true,
         paths: ['database/migrations'],
