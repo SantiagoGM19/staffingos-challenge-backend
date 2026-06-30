@@ -5,12 +5,12 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.bigIncrements('id')
+      table.increments('id')
       table.integer('external_user_id').notNullable()
       table.string('token', 500).notNullable().unique()
       table.boolean('is_active').defaultTo(true)
-      table.timestamp('created_at').defaultTo(this.now())
-      table.timestamp('expires_at').notNullable()
+      table.timestamp('created_at', { useTz: true }).notNullable()
+      table.timestamp('expires_at', { useTz: true }).notNullable()
     })
   }
 

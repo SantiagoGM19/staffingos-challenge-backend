@@ -11,13 +11,13 @@ export class UserSessionSchema extends BaseModel {
   static $columns = ['createdAt', 'expiresAt', 'externalUserId', 'id', 'isActive', 'token'] as const
   $columns = UserSessionSchema.$columns
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime | null
+  declare createdAt: DateTime
   @column.dateTime()
   declare expiresAt: DateTime
   @column()
   declare externalUserId: number
   @column({ isPrimary: true })
-  declare id: bigint | number
+  declare id: number
   @column()
   declare isActive: boolean | null
   @column()
