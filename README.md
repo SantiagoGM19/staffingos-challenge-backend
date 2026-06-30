@@ -330,6 +330,33 @@ The following JSONPlaceholder endpoints are called internally:
 
 ---
 
+## Token Cleanup & Session Management
+
+To prevent the database from filling up with expired or duplicate sessions, this API implements a two-fold approach for managing token lifecycles:
+
+1. **Single Active Session Constraint**: Whenever a user logs in, any previously active sessions in the database are automatically marked as inactive (`isActive: false`). This guarantees that a user can only have one valid token at a time.
+2. **Lazy Cleanup on Authentication**: If a user attempts to authenticate using a token that has expired, the `AuthMiddleware` catches the `TokenExpiredError` and immediately sets that token to `isActive: false` in the database.
+
+### Background Pruning (Cron Job)
+While the "lazy cleanup" handles tokens that are actively used, abandoned tokens (where the user never logs in again or makes another request) would technically remain `isActive: true` indefinitely. 
+
+To solve this architectural edge case and keep the database fully synced with reality, a custom Adonis Ace command is provided:
+
+```bash
+node ace tokens:prune
+```
+
+This command runs a query to mark all mathematically expired tokens as inactive. In a production environment, this command would be set up as a **cron job** to run nightly (e.g., `0 3 * * * node ace tokens:prune`), ensuring the database state is always pristine without relying solely on user activity.
+
+### Architectural Note: Stateful JWTs
+This project intentionally implements a **"Stateful JWT"** pattern. 
+
+By design, JWTs are meant to be stateless, allowing a server to verify them cryptographically without a database lookup. However, stateless JWTs cannot be instantly revoked before they expire. 
+
+By checking the database on every authenticated request (`UserSession.findBy({ token, isActive: true })`), we sacrifice the stateless scaling benefits of JWTs in exchange for **strict, immediate database control over sessions**. This trade-off was chosen specifically to implement features like the **Single Active Session Constraint** and forced logouts, which would be impossible with purely stateless tokens. The resulting database bloat is mitigated by the lazy-cleanup and cron-job strategies described above.
+
+---
+
 ## Project Structure
 
 ```
