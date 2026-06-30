@@ -15,7 +15,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: any, ctx: HttpContext) {
-    if (error.name === 'ValidationException') {
+    if (error.code === 'E_VALIDATION_ERROR') {
       return ctx.response.status(422).json(ApiResponse.error('Validation error', error.messages))
     }
 
