@@ -1,6 +1,6 @@
 import vine, { SimpleMessagesProvider } from "@vinejs/vine"
 
-export const createAndUpdatePostValidator = vine.compile(
+export const createAndUpdatePostValidator = vine.create(
     vine.object({
         title: vine.string(),
         body: vine.string(),
