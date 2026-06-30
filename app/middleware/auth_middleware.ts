@@ -16,7 +16,7 @@ export default class AuthMiddleware {
       return response.unauthorized(ApiResponse.error('Unauthorized: missing or malformed Authorization header'))
     }
 
-    if (!this.verifyToken(token)) {
+    if (!(await this.verifyToken(token))) {
       return response.unauthorized(ApiResponse.error('Unauthorized: invalid or expired token'))
     }
 
@@ -33,11 +33,15 @@ export default class AuthMiddleware {
     return token || null
   }
 
-  private verifyToken(token: string): boolean {
+  private async verifyToken(token: string): Promise<boolean> {
     try {
       jwt.verify(token, this.jwtSecret)
       return true
-    } catch {
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        // Automatically set the expired token as inactive in the database
+        await UserSession.query().where('token', token).update({ isActive: false })
+      }
       return false
     }
   }

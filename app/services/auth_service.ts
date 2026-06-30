@@ -22,6 +22,8 @@ export class AuthService {
 
     if (!user || password !== this.PASSWORD) throw new InvalidCredentialsException()
 
+    await this.invalidatePreviousSessions(user.id)
+
     const token = this.generateToken(user.id, user.email)
     await this.persistSession(user.id, token)
 
@@ -53,5 +55,12 @@ export class AuthService {
     const createdAt = DateTime.now()
     const expiresAt = createdAt.plus({ hours: this.TOKEN_TTL_HOURS })
     await UserSession.create({ externalUserId: userId, token, isActive: true, createdAt, expiresAt })
+  }
+
+  private async invalidatePreviousSessions(userId: number): Promise<void> {
+    await UserSession.query()
+      .where('externalUserId', userId)
+      .where('isActive', true)
+      .update({ isActive: false })
   }
 }
