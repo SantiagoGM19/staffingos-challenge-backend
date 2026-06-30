@@ -72,7 +72,7 @@ test.group('Functional / Post Controller', (group) => {
       message: 'Posts retrieved successfully',
     })
     
-    const data = response.body().data
+    const data = (response.body() as any).data
     assert.isArray(data)
     assert.lengthOf(data, 1)
     assert.equal(data[0].title, 'Title 1')
@@ -92,7 +92,7 @@ test.group('Functional / Post Controller', (group) => {
       message: 'Post created successfully',
     })
 
-    const data = response.body().data
+    const data = (response.body() as any).data
     assert.equal(data.id, 102)
     assert.equal(data.title, 'New Post')
   })
@@ -111,7 +111,7 @@ test.group('Functional / Post Controller', (group) => {
       message: 'Post updated successfully',
     })
 
-    const data = response.body().data
+    const data = (response.body() as any).data
     assert.equal(data.id, 105)
     assert.equal(data.title, 'Updated Post')
   })

@@ -40,8 +40,9 @@ test.group('Functional / Auth Controller', (group) => {
       message: 'Login successful',
     })
     
-    assert.properties(response.body().data, ['user', 'token'])
-    assert.equal(response.body().data.user.email, validEmail)
+    const body = response.body() as any
+    assert.properties(body.data, ['user', 'token'])
+    assert.equal(body.data.user.email, validEmail)
   })
 
   test('should fail login with invalid password', async ({ client }) => {
@@ -79,7 +80,8 @@ test.group('Functional / Auth Controller', (group) => {
     })
     
     loginResponse.assertStatus(200)
-    const token = loginResponse.body().data.token
+    const loginBody = loginResponse.body() as any
+    const token = loginBody.data.token
     
     let session = await UserSession.findBy('token', token)
     assert.isNotNull(session)
