@@ -116,13 +116,23 @@ node ace test --files="tests/functional"
 
 ## API Routes
 
-All responses follow a consistent envelope format:
+All responses follow a consistent envelope format. Success responses include a `data` field, while error responses may include an `errors` field with validation details:
 
+**Success Response Envelope:**
 ```json
 {
-  "status": "success" | "error",
+  "status": "success",
   "message": "...",
   "data": { ... } | [ ... ] | null
+}
+```
+
+**Error Response Envelope:**
+```json
+{
+  "status": "error",
+  "message": "...",
+  "errors": [ ... ] // Optional, usually present in 422 Validation errors
 }
 ```
 
@@ -162,6 +172,8 @@ Authenticates a user. Looks up the email against JSONPlaceholder's `/users` endp
 **Error Responses:**
 - `401 Unauthorized` — Invalid email or wrong password
 - `422 Unprocessable Entity` — Validation failed (invalid email format, password too short)
+- `500 Internal Server Error` — Unexpected application error
+- `502 Bad Gateway` — External service error (JSONPlaceholder unavailable)
 
 ---
 
@@ -178,6 +190,7 @@ Authorization: Bearer <token>
 
 **Error Responses:**
 - `401 Unauthorized` — Missing or invalid token
+- `500 Internal Server Error` — Unexpected application error
 
 ---
 
@@ -211,6 +224,11 @@ Authorization: Bearer <token>
   ]
 }
 ```
+
+**Error Responses:**
+- `401 Unauthorized` — Missing or invalid token
+- `500 Internal Server Error` — Unexpected application error
+- `502 Bad Gateway` — External service error (JSONPlaceholder unavailable)
 
 ---
 
@@ -253,7 +271,10 @@ Content-Type: application/json
 ```
 
 **Error Responses:**
+- `401 Unauthorized` — Missing or invalid token
 - `422 Unprocessable Entity` — Missing or invalid fields
+- `500 Internal Server Error` — Unexpected application error
+- `502 Bad Gateway` — External service error (JSONPlaceholder unavailable)
 
 ---
 
@@ -290,6 +311,12 @@ Content-Type: application/json
 }
 ```
 
+**Error Responses:**
+- `401 Unauthorized` — Missing or invalid token
+- `422 Unprocessable Entity` — Missing or invalid fields
+- `500 Internal Server Error` — Unexpected application error
+- `502 Bad Gateway` — External service error (JSONPlaceholder unavailable)
+
 ---
 
 #### `DELETE /posts/:id`
@@ -309,6 +336,11 @@ Authorization: Bearer <token>
   "data": null
 }
 ```
+
+**Error Responses:**
+- `401 Unauthorized` — Missing or invalid token
+- `500 Internal Server Error` — Unexpected application error
+- `502 Bad Gateway` — External service error (JSONPlaceholder unavailable)
 
 ---
 
