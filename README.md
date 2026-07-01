@@ -95,6 +95,10 @@ npm run dev
 
 The server will start at `http://localhost:3333`.
 
+### 6. Testing with Postman
+
+A Postman collection (`staffingos challenge.postman_collection.json`) has been included in the root of the project to help you test the API endpoints easily. You can import this file directly into Postman.
+
 ---
 
 ## Running Tests
